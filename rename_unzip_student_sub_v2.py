@@ -52,11 +52,11 @@ def unzip_files_in_subdirectories(directory):
                         print(f"Failed to unzip {filename} - not a zip file or corrupted.")
 
 if __name__ == "__main__":
-    target_directory = input("Please enter the target directory: ")
+    target_directory = input("Enter the dir. containing student submission: ")
     if not os.path.exists(target_directory):
         print("The specified directory does not exist. Please check the path and try again.")
     else:
-        csv_path = input("Please enter the full path of the name list: ")
+        csv_path = input("Enter the filename that has student name and group (full path + filename needed): ")
         if not os.path.isfile(csv_path):
             print("The specified CSV file does not exist. Please check the path and try again.")
         else:

@@ -28,6 +28,7 @@ def extract_name_from_folder(folder_name):
     except ValueError:
         return ""
 
+
 # 3. Merges contents of two folders, handling name conflicts
 def merge_folder_contents(src_folder, dst_folder, log_file):
     for item in os.listdir(src_folder):

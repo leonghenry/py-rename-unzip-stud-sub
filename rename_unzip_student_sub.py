@@ -1,6 +1,7 @@
 import csv
 import os
 import zipfile
+import re
 
 def read_name_list(csv_path):
     # Create a dictionary to hold the data from the CSV
@@ -9,8 +10,8 @@ def read_name_list(csv_path):
     with open(csv_path, newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
-            # Store name, class, and team as a list associated with student_id
-            student_dict[row['student_id']] = [row['name'], row['class'], row['team']]
+            # KEY BY NAME (2nd column). Store student_id, class, team as value.
+            student_dict[row['name']] = [row['student_id'], row['class'], row['team']]
     return student_dict
 
 def rename_directory(target_directory, name_dict):
@@ -18,11 +19,19 @@ def rename_directory(target_directory, name_dict):
     for item in os.listdir(target_directory):
         item_path = os.path.join(target_directory, item)
         if os.path.isdir(item_path):
-            input_id = item[:8]  # Take the first 8 characters of the directory name
-            if input_id in name_dict:
-                name, class_, team = name_dict[input_id]
-                sanitized_name = name.replace('/', '')
-                new_name = f"{team}_{sanitized_name}_{input_id}"
+            # Extract student name between " - " and " SOI"
+            m = re.search(r'-\s*(.*?)\s*SOI', item, flags=re.IGNORECASE)
+            if not m:
+                print(f"Name not found in '{item}'")
+                continue
+
+            extracted_name = m.group(1).strip()
+
+            # Look up by NAME in name_dict
+            if extracted_name in name_dict:
+                student_id, class_, team = name_dict[extracted_name]
+                sanitized_name = extracted_name.replace('/', '')
+                new_name = f"{team}_{sanitized_name}_{student_id}"
                 new_path = os.path.join(target_directory, new_name)
                 os.rename(item_path, new_path)
                 print(f"Renamed '{item}' to '{new_name}'")
